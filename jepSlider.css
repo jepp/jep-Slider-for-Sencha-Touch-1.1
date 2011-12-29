@@ -1,0 +1,19 @@
+.jep-range-slider .x-thumb {
+  width: 1.1em;
+  z-index: 2;
+}
+
+.jep-range-slider .x-thumb::before {
+  width: 1.1em;
+  left: 0.104em;
+  -webkit-border-radius: 0.3em;
+}
+
+.jep-slider-range-box {
+  position: absolute;
+  border: 1px solid #DDD;
+  background-color: yellow;
+  top: 25%;
+  bottom: 25%;
+  z-index: 1;
+}

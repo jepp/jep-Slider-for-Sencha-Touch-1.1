@@ -1,0 +1,9 @@
+I needed a slider with multiple thumbs and highlighted ranges, and it's going to be a while before we switch to 2.0. So I went ahead and coded it.
+
+Note that you could tweak this CSS pretty easily to get it to look more like you want it.
+
+Right now it makes the highlighted range everything between the first and last thumb. If you put more thumbs on, they'll just show up on top of that highlighted range.
+
+I've tested it on an iPad and an android phone and it seems to work well. Of course, the standard slider isn't great on android in 1.1.1 so mine will be the same. It also doesn't work well in a toolbar (neither does the stock slider).
+
+Since it incorporates a decent chunk of Sencha Touch code, the license is the same as it is for the rest of Sencha Touch.
