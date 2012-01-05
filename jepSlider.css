@@ -1,19 +1,128 @@
-.jep-range-slider .x-thumb {
-  width: 1.1em;
-  z-index: 2;
+.jep-slider::after {
+  margin: 0 0.4625em;
 }
 
-.jep-range-slider .x-thumb::before {
+.jep-slider .x-thumb {
   width: 1.1em;
-  left: 0.104em;
+  z-index: 3;
+}
+
+.jep-slider .x-thumb::before {
+  width: 1.1em;
+  left: 0.0875em;
+  border-radius: 0.3em;
   -webkit-border-radius: 0.3em;
 }
 
-.jep-slider-range-box {
+.jep-slider-increment-mark {
+  position: absolute;
+  width: 2px;
+  height: 0.8em;
+  top: 0.737em;
+  margin-left: 0.55em;
+  border-left: 1px inset #eee;
+  border-right: 1px inset #eee;
+  z-index: 2;
+}
+
+.jep-slider-increment-range-mark {
+  position: absolute;
+  top: 0.175em;
+  height: 1.85em;
+  border-left: 1px inset #eee;
+  border-right: 1px inset white;
+  opacity: 0.25;
+}
+
+.jep-slider-range {
   position: absolute;
   border: 1px solid #DDD;
   background-color: yellow;
-  top: 25%;
-  bottom: 25%;
+  top: 0.175em;
+  height: 1.85em;
   z-index: 1;
 }
+
+
+.jep-slider-thumb-label,
+.jep-slider-thumb-label-first,
+.jep-slider-thumb-label-last {
+  position: absolute;
+  font-size: 0.7em;
+  color: black;
+  width: 100%;
+  top: 2.7em;
+  white-space: nowrap;
+  z-index: 4;
+}
+
+.jep-slider-thumb-label {
+  text-align: center;
+  margin-left: 2px;
+}
+
+.jep-slider-thumb-label-first {
+  text-align: left;
+}
+
+.jep-slider-thumb-label-last {
+  text-align: right;
+}
+
+
+
+/**
+ * Marker Labels at bottom
+ * -----------------------
+ * Note that the above CSS also has marker labels at the bottom
+ * but this shifts the track up a little to give them some more
+ * breathing room.  The above is the default because it keeps the
+ * track centered.  But sometimes this way may be more appropriate
+ * to your design.
+ */
+/*
+.jep-slider::after,
+.jep-slider-increment-mark {
+  top: 0.437em;
+}
+
+.jep-slider .x-thumb::before,
+.jep-slider-range,
+.jep-slider-increment-range-mark {
+  top: -0.175em;
+}
+
+.jep-slider-thumb-label,
+.jep-slider-thumb-label-first,
+.jep-slider-thumb-label-last {
+  top: 2.4em;
+}
+*/
+
+/**
+ * Marker Labels at top
+ * --------------------
+ * Like the preceding css, this moves the trackwidth to give the
+ * labels more breathing room.  However, there is no version of
+ * labels on the top that keeps the track centered.  I found that
+ * there just wasn't enough room at the top for readable labels
+ * without moving it.
+ */
+/*
+.jep-slider::after,
+.jep-slider-increment-mark {
+  top: 1.037em;
+}
+
+.jep-slider .x-thumb::before,
+.jep-slider-range,
+.jep-slider-increment-range-mark {
+  top: 0.475em;
+}
+
+.jep-slider-thumb-label,
+.jep-slider-thumb-label-first,
+.jep-slider-thumb-label-last {
+  top: -0.8em;
+}
+*/
