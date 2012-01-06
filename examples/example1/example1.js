@@ -17,23 +17,15 @@ var config = [
     value:3
   },
   {
-    label:'single (with min/max labels)',
-    xtype:'jepsliderfield',
-    minValue:1,
-    maxValue:10,
-    showMinLabel:true,
-    showMaxLabel:true,
-    increment:1,
-    value:3
-  },
-  {
-    label:'single (with increments and labels)',
+    label:'single (with increments and min, max and thumb labels)',
     xtype:'jepsliderfield',
     minValue:1,
     maxValue:10,
     increment:1,
     showIncrements:true,
     showThumbLabels:true,
+    showMinLabel:true,
+    showMaxLabel:true,
     value:3
   },
   {

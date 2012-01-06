@@ -801,7 +801,16 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
 
         thumb.sliderLabel.el.applyStyles(style);
 
-        thumb.sliderLabel.update(this.getLabel(this, value, false).toString());
+        var label;
+        if ((!this.showMinLabel || value !== this.minValue)
+            && (!this.showMaxLabel || value !== this.maxValue)) {
+          label = this.getLabel(this, value, false).toString();
+        }
+        else {
+          label = '';
+        }
+
+        thumb.sliderLabel.update(label);
       }
     }
     else if (thumb.sliderLabel !== undefined) {
