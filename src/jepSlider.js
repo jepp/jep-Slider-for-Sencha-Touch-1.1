@@ -36,6 +36,17 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
   increment:1,
 
   /**
+   * @cfg {String} maxLabel If defined and {@link showMaxLabel} is true, this string will be used for the label for the
+   * {@link maxValue}.  If undefined and {@link showMaxLabel} is false, getLabel will be called to create the label
+   */
+  maxLabel:undefined,
+
+  /**
+   * @cfg {Number} maxValue The highest value any thumb on this slider can be set to (defaults to 100)
+   */
+  maxValue:100,
+
+  /**
    * @cfg {Number} minDistance The minimum distance to snap a thumb to relative to its neighbor.  This is the minimum amount
    * of distance between two thumbs when multiple thumbs are used.  To allow thumbs to be set to the same value, use a value of 0.
    * When undefined (the default), the minimum distance is equal to one increment value.
@@ -43,14 +54,15 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
   minDistance:undefined,
 
   /**
+   * @cfg {String} minLabel If defined and {@link showMinLabel} is true, this string will be used for the label for the
+   * {@link minValue}.  If undefined and {@link showMinLabel} is false, getLabel will be called to create the label
+   */
+  minLabel:undefined,
+
+  /**
    * @cfg {Number} minValue The lowest value any thumb on this slider can be set to (defaults to 0)
    */
   minValue:0,
-
-  /**
-   * @cfg {Number} maxValue The highest value any thumb on this slider can be set to (defaults to 100)
-   */
-  maxValue:100,
 
   /**
    * @cfg {Mixed} showIncrements Determines if increments are drawn on the slider
@@ -147,6 +159,19 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
   },
 
   /**
+   * Sets {@link maxLabel} for the slider at runtime
+   * @param {Boolean} value The new maxLabel
+   */
+  setMaxLabel:function (value) {
+    if (value !== this.maxLabel) {
+      this.maxLabel = value;
+
+      this.updateMinMaxLabels();
+      this.updateThumbLabels(); // in case a thumb is on this label
+    }
+  },
+
+  /**
    * Sets the {@link maxValue} for the slider at runtime
    * @param {Number} value The new maxValue
    */
@@ -168,6 +193,19 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
       this.minDistance = value;
 
       this.updateSizes();
+    }
+  },
+
+  /**
+   * Sets {@link minLabel} for the slider at runtime
+   * @param {Boolean} value The new minLabel
+   */
+  setMinLabel:function (value) {
+    if (value !== this.minLabel) {
+      this.minLabel = value;
+
+      this.updateMinMaxLabels();
+      this.updateThumbLabels(); // in case a thumb is on this label
     }
   },
 
@@ -203,7 +241,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
   setShowMinLabel:function (value) {
     if (value !== this.showMinLabel) {
       this.showMinLabel = value;
-      
+
       this.updateMinMaxLabels();
     }
   },
@@ -652,7 +690,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
     var label;
 
     if (this.showMinLabel) {
-      label = this.getLabel(this, this.minValue, true).toString();
+      label = this.minLabel !== undefined ? this.minLabel : this.getLabel(this, this.minValue, true).toString();
 
       if (this.minLabelCmp === undefined) {
         this.minLabelCmp = new Ext.Component({
@@ -671,7 +709,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
     }
 
     if (this.showMaxLabel) {
-      label = this.getLabel(this, this.maxValue, true).toString();
+      label = this.maxLabel !== undefined ? this.maxLabel : this.getLabel(this, this.maxValue, true).toString();
 
       if (this.maxLabelCmp === undefined) {
         this.maxLabelCmp = new Ext.Component({

@@ -100,7 +100,7 @@ var config = [
     values:[24, 58],
   },
   {
-    label:'getThumbLabel override',
+    label:'getThumbLabel override (win minLabel and maxLabel)',
     xtype:'jepsliderfield',
     showRange:true,
     minValue:0,
@@ -108,8 +108,10 @@ var config = [
     increment:1,
     showIncrements:true,
     showThumbLabels:true,
+    showMinLabel:true,
+    showMaxLabel:true,
     value:3,
-    getThumbLabel:function (slider, value) {
+    getLabel:function (slider, value, isMinMaxLabel) {
       return ['Terrible', 'Bad', 'Average', 'Good', 'Great'][value]
     }
   }
