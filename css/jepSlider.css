@@ -79,23 +79,27 @@
  * breathing room.  The above is the default because it keeps the
  * track centered.  But sometimes this way may be more appropriate
  * to your design.
+ *
+ * You can uncomment this here, or paste it into your application's
+ * css file (as long as you preserve the !important to avoid it being
+ * overwritten by the css in this file).
  */
 /*
 .jep-slider::after,
 .jep-slider-increment-mark {
-  top: 0.437em;
+  top: 0.437em !important;
 }
 
 .jep-slider .x-thumb::before,
 .jep-slider-range,
 .jep-slider-increment-range-mark {
-  top: -0.175em;
+  top: -0.175em !important;
 }
 
 .jep-slider-thumb-label,
 .jep-slider-thumb-label-first,
 .jep-slider-thumb-label-last {
-  top: 2.4em;
+  top: 2.4em !important;
 }
 */
 
@@ -107,22 +111,26 @@
  * labels on the top that keeps the track centered.  I found that
  * there just wasn't enough room at the top for readable labels
  * without moving it.
+ *
+ * You can uncomment this here, or paste it into your application's
+ * css file (as long as you preserve the !important to avoid it being
+ * overwritten by the css in this file).
  */
 /*
 .jep-slider::after,
 .jep-slider-increment-mark {
-  top: 1.037em;
+  top: 1.037em !important;
 }
 
 .jep-slider .x-thumb::before,
 .jep-slider-range,
 .jep-slider-increment-range-mark {
-  top: 0.475em;
+  top: 0.475em !important;
 }
 
 .jep-slider-thumb-label,
 .jep-slider-thumb-label-first,
 .jep-slider-thumb-label-last {
-  top: -0.8em;
+  top: -0.8em !important;
 }
 */
