@@ -267,6 +267,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
       this.showRange = value;
 
       this.updateRange();
+      this.updateIncrementMarks(); // in case some are now in the range
     }
   },
 
