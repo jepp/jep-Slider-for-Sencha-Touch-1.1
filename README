@@ -1,3 +1,7 @@
 jep.field.Slider is a slider that supports multiple thumbs, increment marks, ranges, thumb labels and more.  See the docs for full descriptions of features.
 
 Since it incorporates a decent chunk of Sencha Touch code, the license is the same as it is for the rest of Sencha Touch.
+
+Discussion can be found at:
+
+http://www.sencha.com/forum/showthread.php?163130
