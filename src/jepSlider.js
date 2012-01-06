@@ -666,7 +666,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
     if (this.showThumbLabels) {
       var value = this.values[this.thumbs.indexOf(thumb)];
 
-      var style = {width:this.drawnIncrementPx, left:null, right:null};
+      var style = {width:this.drawnIncrementPx + 'px', left:null, right:null};
 
       if (value !== undefined) {
         if (thumb.sliderLabel !== undefined && thumb.rendered) {
@@ -685,7 +685,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
           }
           else {
             cls = '';
-            style.left = x - this.drawnIncrementPx / 2 + this.thumbWidth / 2;
+            style.left = (x - this.drawnIncrementPx / 2 + this.thumbWidth / 2) + 'px';
           }
         }
 
@@ -733,7 +733,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
         var left = this.getPixelValue(this.values[0]) + this.thumbWidth / 2;
         var right = this.getPixelValue(this.values[this.values.length - 1]) - this.thumbWidth / 2;
 
-        var style = {left:left, right:this.trackWidth - right};
+        var style = {left:left + 'px', right:(this.trackWidth - right) + 'px'};
         this.rangeCmp.el.applyStyles(style);
       }
     }
@@ -766,7 +766,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
         var value = this.minValue + this.drawnIncrement * (i + 1);
         var left = this.getPixelValue(value);
 
-        this.incrementMarks[i].el.applyStyles({left:left});
+        this.incrementMarks[i].el.applyStyles({left:left + 'px'});
 
         if (this.values.length > 1
             && value > this.values[0]
