@@ -108,7 +108,7 @@
  * there just wasn't enough room at the top for readable labels
  * without moving it.
  */
-
+/*
 .jep-slider::after,
 .jep-slider-increment-mark {
   top: 1.037em;
@@ -125,3 +125,4 @@
 .jep-slider-thumb-label-last {
   top: -0.8em;
 }
+*/
