@@ -44,13 +44,14 @@
 }
 
 
+.jep-slider-min-label,
+.jep-slider-max-label,
 .jep-slider-thumb-label,
 .jep-slider-thumb-label-first,
 .jep-slider-thumb-label-last {
   position: absolute;
   font-size: 0.7em;
   color: black;
-  width: 100%;
   top: 2.7em;
   white-space: nowrap;
   z-index: 4;
@@ -69,7 +70,13 @@
   text-align: right;
 }
 
+.jep-slider-min-label {
+  left: 0;
+}
 
+.jep-slider-max-label {
+  right: 0;
+}
 
 /**
  * Marker Labels at bottom
@@ -96,6 +103,8 @@
   top: -0.175em !important;
 }
 
+.jep-slider-min-label,
+.jep-slider-max-label,
 .jep-slider-thumb-label,
 .jep-slider-thumb-label-first,
 .jep-slider-thumb-label-last {
@@ -128,6 +137,8 @@
   top: 0.475em !important;
 }
 
+.jep-slider-min-label,
+.jep-slider-max-label,
 .jep-slider-thumb-label,
 .jep-slider-thumb-label-first,
 .jep-slider-thumb-label-last {

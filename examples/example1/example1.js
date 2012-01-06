@@ -17,6 +17,16 @@ var config = [
     value:3
   },
   {
+    label:'single (with min/max labels)',
+    xtype:'jepsliderfield',
+    minValue:1,
+    maxValue:10,
+    showMinLabel:true,
+    showMaxLabel:true,
+    increment:1,
+    value:3
+  },
+  {
     label:'single (with increments and labels)',
     xtype:'jepsliderfield',
     minValue:1,
