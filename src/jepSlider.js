@@ -913,7 +913,8 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
 
         this.incrementMarks[i].el.applyStyles({left:left + 'px'});
 
-        if (this.values.length > 1
+        if (this.showRange
+            && this.values.length > 1
             && value > this.values[0]
             && value < this.values[this.values.length - 1]) {
           this.incrementMarks[i].addCls(this.incrementRangeMarkCls);
