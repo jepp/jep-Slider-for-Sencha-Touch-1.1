@@ -29,8 +29,9 @@ var config = [
     value:3
   },
   {
-    label:'two thumbs (plain)',
+    label:'two thumbs (with increment marks)',
     xtype:'jepsliderfield',
+    showIncrements:true,
     minValue:0,
     maxValue:100,
     increment:10,
@@ -100,7 +101,7 @@ var config = [
     values:[24, 58],
   },
   {
-    label:'getThumbLabel override (win minLabel and maxLabel)',
+    label:'getThumbLabel override (win showMinLabel and showMaxLabel)',
     xtype:'jepsliderfield',
     showRange:true,
     minValue:0,
