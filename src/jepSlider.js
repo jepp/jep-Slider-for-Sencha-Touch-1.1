@@ -179,7 +179,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
     if (this.maxValue !== value) {
       this.maxValue = value;
 
-      this.updateSizes();
+      this.updateSizes(true);
       this.updateMinMaxLabels();
     }
   },
@@ -192,6 +192,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
     if (this.minDistance !== value) {
       this.minDistance = value;
 
+      this.setValues(this.values); // apply constraints
       this.updateSizes();
     }
   },
@@ -217,7 +218,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
     if (this.minValue !== value) {
       this.minValue = value;
 
-      this.updateSizes();
+      this.updateSizes(true);
       this.updateMinMaxLabels();
     }
   },
@@ -302,10 +303,17 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
     }
 
     if (values !== undefined) {
+      if (values.length === undefined) {
+        values = [values];
+      }
+
       this.values = values;
     }
 
-    this.updateSizes();
+    this.setValues(values); // apply constraints
+
+    this.updateSizes(true);
+    this.updateMinMaxLabels();
   },
 
   /**
@@ -350,7 +358,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
       this.setValueTo(i, values[i], animationDuration, moveThumb);
     }
 
-    this.updateSizes();
+    this.updateSizes(true);
 
     return this;
   },
@@ -660,7 +668,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
       }
 
       // check against thumb to the right
-      if (thumbIndex !== this.values.length - 1) {
+      if (thumbIndex < this.values.length - 1) {
         value = Math.min(value, this.values[thumbIndex + 1] - this.actualMinDistance);
         value = Math.max(this.minValue, value);
       }
@@ -740,7 +748,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
   },
 
   // @private
-  updateSizes:function () {
+  updateSizes:function (forceRefresh) {
     var trackWidth = this.trackWidth;
     var thumbWidth = this.thumbWidth;
     var drawnIncrement = this.drawnIncrement;
@@ -767,7 +775,8 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
       this.incrementCount = this.drawnIncrement === 0 ? 0 :
           Math.ceil((this.maxValue - this.minValue) / this.drawnIncrement) - 1;
 
-      if (!Ext.is.Desktop // seems to need forcing more on non-desktop environments
+      if (forceRefresh
+          || !Ext.is.Desktop // seems to need forcing more on non-desktop environments
           || trackWidth !== this.trackWidth
           || thumbWidth !== this.thumbWidth
           || drawnIncrement !== this.drawnIncrement
