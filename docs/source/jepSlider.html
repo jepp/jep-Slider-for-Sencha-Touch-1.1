@@ -17,7 +17,7 @@
  * * minimum distance between thumbs
  * * customizable thumb labels
  * @author jep
- * @version 2.0
+ * @version 2.5
  */
 jep.field.Slider = Ext.extend(Ext.form.Field, {
   <div id="cfg-jep.field.Slider-animationDuration"></div>/**
@@ -25,11 +25,14 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
    */
   animationDuration:200,
 
-  <div id="cfg-jep.field.Slider-getThumbLabel"></div>/**
-   * @cfg {String} getThumbLabel Function to call to translate thumb value into thumb label if showThumbLabels is used
-   * @return {String} The label to appear under a thumb
+  <div id="cfg-jep.field.Slider-getLabel"></div>/**
+   * @cfg {String} getLabel Function to call to translate thumb value into thumb label if showThumbLabels is used
+   * @param {jep.field.Slider} slider The slider calling the function
+   * @param {Number} value The value at the label
+   * @param {Boolean} isMinMaxLabel Whether this label call is being used for {@link showMinLabel} or {@link showMaxLabel}
+   * @return {String} The label to appear
    */
-  getThumbLabel:function (slider, value) {
+  getLabel:function (slider, value, isMinMaxLabel) {
     return value;
   },
 
@@ -40,6 +43,17 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
    */
   increment:1,
 
+  <div id="cfg-jep.field.Slider-maxLabel"></div>/**
+   * @cfg {String} maxLabel If defined and {@link showMaxLabel} is true, this string will be used for the label for the
+   * {@link maxValue}.  If undefined and {@link showMaxLabel} is false, getLabel will be called to create the label
+   */
+  maxLabel:undefined,
+
+  <div id="cfg-jep.field.Slider-maxValue"></div>/**
+   * @cfg {Number} maxValue The highest value any thumb on this slider can be set to (defaults to 100)
+   */
+  maxValue:100,
+
   <div id="cfg-jep.field.Slider-minDistance"></div>/**
    * @cfg {Number} minDistance The minimum distance to snap a thumb to relative to its neighbor.  This is the minimum amount
    * of distance between two thumbs when multiple thumbs are used.  To allow thumbs to be set to the same value, use a value of 0.
@@ -47,21 +61,34 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
    */
   minDistance:undefined,
 
+  <div id="cfg-jep.field.Slider-minLabel"></div>/**
+   * @cfg {String} minLabel If defined and {@link showMinLabel} is true, this string will be used for the label for the
+   * {@link minValue}.  If undefined and {@link showMinLabel} is false, getLabel will be called to create the label
+   */
+  minLabel:undefined,
+
   <div id="cfg-jep.field.Slider-minValue"></div>/**
    * @cfg {Number} minValue The lowest value any thumb on this slider can be set to (defaults to 0)
    */
   minValue:0,
-
-  <div id="cfg-jep.field.Slider-maxValue"></div>/**
-   * @cfg {Number} maxValue The highest value any thumb on this slider can be set to (defaults to 100)
-   */
-  maxValue:100,
 
   <div id="cfg-jep.field.Slider-showIncrements"></div>/**
    * @cfg {Mixed} showIncrements Determines if increments are drawn on the slider
    * (defaults to false)
    */
   showIncrements:false,
+
+  <div id="cfg-jep.field.Slider-showMinLabel"></div>/**
+   * @cfg {Boolean} showMinLabel Determines if a label is drawn for the minValue
+   * (defaults to false)
+   */
+  showMinLabel:false,
+
+  <div id="cfg-jep.field.Slider-showMaxLabel"></div>/**
+   * @cfg {Boolean} showMaxLabel Determines if a label is drawn for the maxValue
+   * (defaults to false)
+   */
+  showMaxLabel:false,
 
   <div id="cfg-jep.field.Slider-showRange"></div>/**
    * @cfg {Boolean} showRange Whether to show the range between the left- and rightmost thumbs in a special style
@@ -116,14 +143,15 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
     return this.values;
   },
 
-  <div id="method-jep.field.Slider-setGetThumbLabel"></div>/**
-   * Used to change the {@link getThumbLabel} property
-   * @param {Boolean} value The new value of getThumbLabel
+  <div id="method-jep.field.Slider-setGetLabel"></div>/**
+   * Used to change the {@link getLabel} property
+   * @param {Boolean} value The new value of getLabel
    */
-  setGetThumbLabel:function (fn) {
-    this.getThumbLabel = fn;
+  setGetLabel:function (fn) {
+    this.getLabel = fn;
 
     this.updateThumbLabels();
+    this.updateMinMaxLabels();
   },
 
   <div id="method-jep.field.Slider-setIncrement"></div>/**
@@ -138,6 +166,19 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
     }
   },
 
+  <div id="method-jep.field.Slider-setMaxLabel"></div>/**
+   * Sets {@link maxLabel} for the slider at runtime
+   * @param {Boolean} value The new maxLabel
+   */
+  setMaxLabel:function (value) {
+    if (value !== this.maxLabel) {
+      this.maxLabel = value;
+
+      this.updateMinMaxLabels();
+      this.updateThumbLabels(); // in case a thumb is on this label
+    }
+  },
+
   <div id="method-jep.field.Slider-setMaxValue"></div>/**
    * Sets the {@link maxValue} for the slider at runtime
    * @param {Number} value The new maxValue
@@ -147,6 +188,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
       this.maxValue = value;
 
       this.updateSizes();
+      this.updateMinMaxLabels();
     }
   },
 
@@ -162,6 +204,19 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
     }
   },
 
+  <div id="method-jep.field.Slider-setMinLabel"></div>/**
+   * Sets {@link minLabel} for the slider at runtime
+   * @param {Boolean} value The new minLabel
+   */
+  setMinLabel:function (value) {
+    if (value !== this.minLabel) {
+      this.minLabel = value;
+
+      this.updateMinMaxLabels();
+      this.updateThumbLabels(); // in case a thumb is on this label
+    }
+  },
+
   <div id="method-jep.field.Slider-setMinValue"></div>/**
    * Sets the {@link minValue} for the slider at runtime
    * @param {Number} value The new minValue
@@ -171,6 +226,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
       this.minValue = value;
 
       this.updateSizes();
+      this.updateMinMaxLabels();
     }
   },
 
@@ -186,6 +242,30 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
     }
   },
 
+  <div id="method-jep.field.Slider-setShowMinLabel"></div>/**
+   * Sets {@link showMinLabel} for the slider at runtime
+   * @param {Boolean} value The new showMinLabel
+   */
+  setShowMinLabel:function (value) {
+    if (value !== this.showMinLabel) {
+      this.showMinLabel = value;
+
+      this.updateMinMaxLabels();
+    }
+  },
+
+  <div id="method-jep.field.Slider-setShowMaxLabel"></div>/**
+   * Sets {@link showMaxLabel} for the slider at runtime
+   * @param {Boolean} value The new showMaxLabel
+   */
+  setShowMaxLabel:function (value) {
+    if (value !== this.showMaxLabel) {
+      this.showMaxLabel = value;
+      
+      this.updateMinMaxLabels();
+    }
+  },
+
   <div id="method-jep.field.Slider-setShowRange"></div>/**
    * Sets the {@link showRange} for the slider at runtime
    * @param {Number} value The new showRange
@@ -195,6 +275,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
       this.showRange = value;
 
       this.updateRange();
+      this.updateIncrementMarks(); // in case some are now in the range
     }
   },
 
@@ -311,7 +392,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
       this.updateThumbLabel(thumb, newValue);
     }
 
-    if (newValue === oldValue || this.fireEvent('beforechange', this, thumb, newValue, oldValue) !== false) {
+    if (newValue === oldValue || this.fireEvent('beforechange', this, index, newValue, oldValue) !== false) {
       if (newValue !== oldValue) {
         this.values[index] = newValue;
         thumb.setValue(newValue);
@@ -327,7 +408,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
       }
 
       if (newValue !== oldValue) {
-        this.fireEvent('change', this, thumb, newValue, oldValue);
+        this.fireEvent('change', this, index, newValue, oldValue);
       }
     }
 
@@ -356,13 +437,15 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
   ],
 
   <div id="cfg-jep.field.Slider-inputCls"></div>/**
-   * @cfg {String} inputCls Overrides {@link Ext.form.Field}'s inputCls. Defaults to 'x-slider jep-slider'
+   * @cfg {String} inputCls Overrides {@link Ext.form.Field}'s inputCls. Defaults to 'x-slider'
    */
-  inputCls:'x-slider jep-slider',
+  inputCls:'x-slider',
 
   inputType:'slider',
 
   ui:'slider',
+
+  fieldCls:'jep-slider',
 
   <div id="prop-jep.field.Slider-private"></div>/** Private member variables and functions below this **/
 
@@ -376,22 +459,40 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
   incrementMarks:[],
 
   // @private
-  rangeCls:'jep-slider-range',
+  minLabelCls:'min-label',
 
   // @private
-  thumbLabelCls:'jep-slider-thumb-label',
+  minLabelCmp:undefined,
 
   // @private
-  thumbLabelFirstCls:'jep-slider-thumb-label-first',
+  maxLabelCls:'max-label',
 
   // @private
-  thumbLabelLastCls:'jep-slider-thumb-label-last',
+  maxLabelCmp:undefined,
 
   // @private
-  incrementMarkCls:'jep-slider-increment-mark',
+  noThumbLabelsCls:'no-thumb-labels',
 
   // @private
-  incrementRangeMarkCls:'jep-slider-increment-range-mark',
+  rangeCls:'range',
+
+  // @private
+  thumbLabelCalloutCls:'thumb-label-callout',
+
+  // @private
+  thumbLabelCls:'thumb-label',
+
+  // @private
+  thumbLabelFirstCls:'thumb-label-first',
+
+  // @private
+  thumbLabelLastCls:'thumb-label-last',
+
+  // @private
+  incrementMarkCls:'increment-mark',
+
+  // @private
+  incrementRangeMarkCls:'increment-range-mark',
 
   // @private
   trackWidth:null,
@@ -415,7 +516,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
          * @event beforechange
          * Fires before the value of a thumb is changed. Return false to cancel the change
          * @param {jep.field.Slider} slider The slider instance
-         * @param {Ext.form.Slider.Thumb} thumb The thumb instance
+         * @param {Number} index Index of value changed
          * @param {Number} newValue The value that the thumb will be set to
          * @param {Number} oldValue The previous value
          */
@@ -425,11 +526,12 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
          * @event change
          * Fires when the value of a thumb is changed.
          * @param {jep.field.Slider} slider The slider instance
-         * @param {Ext.form.Slider.Thumb} thumb The thumb instance
+         * @param {Number} index Index of value changed
          * @param {Number} newValue The value that the thumb will be set to
          * @param {Number} oldValue The previous value
          */
         'change',
+
         <div id="event-jep.field.Slider-drag"></div>/**
          * @event drag
          * Fires while the thumb is actively dragging.
@@ -438,6 +540,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
          * @param {Number} value The value of the thumb.
          */
         'drag',
+
         <div id="event-jep.field.Slider-dragend"></div>/**
          * @event dragend
          * Fires when the thumb is finished dragging.
@@ -474,6 +577,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
   // @private
   initComponent:function () {
     this.tabIndex = -1;
+    this.addCls(this.fieldCls);
 
     jep.field.Slider.superclass.initComponent.apply(this, arguments);
   },
@@ -601,6 +705,49 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
   },
 
   // @private
+  updateMinMaxLabels:function () {
+    var label;
+
+    if (this.showMinLabel) {
+      label = this.minLabel !== undefined ? this.minLabel : this.getLabel(this, this.minValue, true).toString();
+
+      if (this.minLabelCmp === undefined) {
+        this.minLabelCmp = new Ext.Component({
+          cls:this.fieldCls + '-' + this.minLabelCls,
+          renderTo:this.fieldEl,
+          html:label
+        })
+      }
+      else {
+        this.minLabelCmp.update(label);
+      } 
+    }
+    else if (this.minLabelCmp !== undefined) {
+      this.minLabelCmp.destroy();
+      this.minLabelCmp = undefined;
+    }
+
+    if (this.showMaxLabel) {
+      label = this.maxLabel !== undefined ? this.maxLabel : this.getLabel(this, this.maxValue, true).toString();
+
+      if (this.maxLabelCmp === undefined) {
+        this.maxLabelCmp = new Ext.Component({
+          cls:this.fieldCls + '-' + this.maxLabelCls,
+          renderTo:this.fieldEl,
+          html:label
+        })
+      }
+      else {
+        this.maxLabelCmp.update(label);
+      } 
+    }
+    else if (this.maxLabelCmp !== undefined) {
+      this.maxLabelCmp.destroy();
+      this.maxLabelCmp = undefined;
+    }
+  },
+
+  // @private
   updateSizes:function () {
     var trackWidth = this.trackWidth;
     var thumbWidth = this.thumbWidth;
@@ -671,57 +818,85 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
 
   // @private
   updateThumbLabel:function (thumb) {
-    if (this.showThumbLabels) {
+    if (this.rendered && this.showThumbLabels) {
       var value = this.values[this.thumbs.indexOf(thumb)];
 
-      var style = {width:this.drawnIncrementPx, left:null, right:null};
-
       if (value !== undefined) {
+        var label = '<span class="' + this.fieldCls + '-thumb-label-text">' +
+            this.getLabel(this, value, false).toString();
+
+        //var labelWidth = this.drawnIncrementPx;
+        var labelWidth = this.trackWidth / 4;
+
+
+        var style = {width:labelWidth + 'px'};
+
+        var x = this.getPixelValue(value);
+
         if (thumb.sliderLabel !== undefined && thumb.rendered) {
           var left;
           var cls;
 
-          var x = this.getPixelValue(value);
-
           if (value === this.minValue) {
-            cls = this.thumbLabelFirstCls;
             style.left = 0;
+            style.right = null;
+            cls = this.fieldCls + '-' + this.thumbLabelFirstCls;
           }
           else if (value === this.maxValue) {
-            cls = this.thumbLabelLastCls;
+            style.left = null;
             style.right = 0;
+            cls = this.fieldCls + '-' + this.thumbLabelLastCls;
           }
           else {
             cls = '';
-            style.left = x - this.drawnIncrementPx / 2 + this.thumbWidth / 2;
+            style.left = (x - labelWidth / 2 + this.thumbWidth / 2) + 'px';
           }
         }
 
         if (thumb.sliderLabel === undefined) {
           thumb.sliderLabel = new Ext.Component({
             renderTo:this.fieldEl,
-            cls:this.thumbLabelCls
+            cls:this.fieldCls + '-' + this.thumbLabelCls
           });
+          thumb.sliderLabelCallout = new Ext.Component({
+            renderTo:this.fieldEl,
+            cls:this.fieldCls + '-' + this.thumbLabelCalloutCls
+          });
+          thumb.sliderLabelCallout.addCls(this.fieldCls + '-' + this.thumbLabelCls);
         }
         else {
-          thumb.sliderLabel.removeCls(this.thumbLabelFirstCls);
-          thumb.sliderLabel.removeCls(this.thumbLabelLastCls);
+          thumb.sliderLabel.removeCls(this.fieldCls + '-' + this.thumbLabelFirstCls);
+          thumb.sliderLabel.removeCls(this.fieldCls + '-' + this.thumbLabelLastCls);
           thumb.sliderLabel.addCls(cls);
+          thumb.sliderLabelCallout.removeCls(this.fieldCls + '-' + this.thumbLabelFirstCls);
+          thumb.sliderLabelCallout.removeCls(this.fieldCls + '-' + this.thumbLabelLastCls);
+          thumb.sliderLabelCallout.addCls(cls);
         }
 
         thumb.sliderLabel.el.applyStyles(style);
 
-        thumb.sliderLabel.update(this.getThumbLabel(this, value));
+        thumb.sliderLabelCallout.el.applyStyles({left:(x + this.thumbWidth / 2 - 1) + 'px'});
+
+        thumb.sliderLabel.update(label);
       }
     }
     else if (thumb.sliderLabel !== undefined) {
       thumb.sliderLabel.destroy();
       thumb.sliderLabel = undefined;
+      thumb.sliderLabelCallout.destroy();
+      thumb.sliderLabelCallout = undefined;
     }
   },
 
   // @private
   updateThumbLabels:function () {
+    if (this.showThumbLabels === false) {
+      this.addCls(this.fieldCls + '-' + this.noThumbLabelsCls);
+    }
+    else {
+      this.removeCls(this.fieldCls + '-' + this.noThumbLabelsCls);
+    }
+
     for (var i = 0; i < this.thumbs.length; i++) {
       this.updateThumbLabel(this.thumbs[i]);
     }
@@ -733,7 +908,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
       if (this.rangeCmp === undefined) {
         this.rangeCmp = new Ext.Component({
           renderTo:this.fieldEl,
-          cls:this.rangeCls
+          cls:this.fieldCls + '-' + this.rangeCls
         });
       }
 
@@ -741,7 +916,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
         var left = this.getPixelValue(this.values[0]) + this.thumbWidth / 2;
         var right = this.getPixelValue(this.values[this.values.length - 1]) - this.thumbWidth / 2;
 
-        var style = {left:left, right:this.trackWidth - right};
+        var style = {left:left + 'px', right:(this.trackWidth - right) + 'px'};
         this.rangeCmp.el.applyStyles(style);
       }
     }
@@ -762,7 +937,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
           function () {
             return new Ext.Component({
                   renderTo:this.fieldEl,
-                  cls:this.incrementMarkCls
+                  cls:this.fieldCls + '-' + this.incrementMarkCls
                 });
           },
 
@@ -774,15 +949,16 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
         var value = this.minValue + this.drawnIncrement * (i + 1);
         var left = this.getPixelValue(value);
 
-        this.incrementMarks[i].el.applyStyles({left:left});
+        this.incrementMarks[i].el.applyStyles({left:left + 'px'});
 
-        if (this.values.length > 1
+        if (this.showRange
+            && this.values.length > 1
             && value > this.values[0]
             && value < this.values[this.values.length - 1]) {
-          this.incrementMarks[i].addCls(this.incrementRangeMarkCls);
+          this.incrementMarks[i].addCls(this.fieldCls + '-' + this.incrementRangeMarkCls);
         }
         else {
-          this.incrementMarks[i].removeCls(this.incrementRangeMarkCls);
+          this.incrementMarks[i].removeCls(this.fieldCls + '-' + this.incrementRangeMarkCls);
         }
       }
     }
@@ -847,6 +1023,9 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
         me.updateSizes();
         me.updateSizes();
       }, 100);
+    }
+    else {
+      this.updateSizes();
     }
   },
 
@@ -937,6 +1116,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
 
     setTimeout(function () {
       me.updateSizes();
+      me.updateMinMaxLabels();
     }, 100);
   },
 

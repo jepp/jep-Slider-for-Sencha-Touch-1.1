@@ -9,7 +9,7 @@ Ext.namespace("jep.field");
  * * minimum distance between thumbs
  * * customizable thumb labels
  * @author jep
- * @version 2.0
+ * @version 2.5
  */
 jep.field.Slider = Ext.extend(Ext.form.Field, {
   /**
@@ -384,7 +384,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
       this.updateThumbLabel(thumb, newValue);
     }
 
-    if (newValue === oldValue || this.fireEvent('beforechange', this, thumb, newValue, oldValue) !== false) {
+    if (newValue === oldValue || this.fireEvent('beforechange', this, index, newValue, oldValue) !== false) {
       if (newValue !== oldValue) {
         this.values[index] = newValue;
         thumb.setValue(newValue);
@@ -400,7 +400,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
       }
 
       if (newValue !== oldValue) {
-        this.fireEvent('change', this, thumb, newValue, oldValue);
+        this.fireEvent('change', this, index, newValue, oldValue);
       }
     }
 
@@ -429,14 +429,15 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
   ],
 
   /**
-   * @cfg {String} inputCls Overrides {@link Ext.form.Field}'s inputCls. Defaults to 'x-slider jep-slider'
+   * @cfg {String} inputCls Overrides {@link Ext.form.Field}'s inputCls. Defaults to 'x-slider'
    */
-  inputCls:'x-slider jep-slider',
+  inputCls:'x-slider',
 
   inputType:'slider',
 
   ui:'slider',
 
+  fieldCls:'jep-slider',
 
   /** Private member variables and functions below this **/
 
@@ -450,34 +451,40 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
   incrementMarks:[],
 
   // @private
-  minLabelCls:'jep-slider-min-label',
+  minLabelCls:'min-label',
 
   // @private
   minLabelCmp:undefined,
 
   // @private
-  maxLabelCls:'jep-slider-max-label',
+  maxLabelCls:'max-label',
 
   // @private
   maxLabelCmp:undefined,
 
   // @private
-  rangeCls:'jep-slider-range',
+  noThumbLabelsCls:'no-thumb-labels',
 
   // @private
-  thumbLabelCls:'jep-slider-thumb-label',
+  rangeCls:'range',
 
   // @private
-  thumbLabelFirstCls:'jep-slider-thumb-label-first',
+  thumbLabelCalloutCls:'thumb-label-callout',
 
   // @private
-  thumbLabelLastCls:'jep-slider-thumb-label-last',
+  thumbLabelCls:'thumb-label',
 
   // @private
-  incrementMarkCls:'jep-slider-increment-mark',
+  thumbLabelFirstCls:'thumb-label-first',
 
   // @private
-  incrementRangeMarkCls:'jep-slider-increment-range-mark',
+  thumbLabelLastCls:'thumb-label-last',
+
+  // @private
+  incrementMarkCls:'increment-mark',
+
+  // @private
+  incrementRangeMarkCls:'increment-range-mark',
 
   // @private
   trackWidth:null,
@@ -501,7 +508,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
          * @event beforechange
          * Fires before the value of a thumb is changed. Return false to cancel the change
          * @param {jep.field.Slider} slider The slider instance
-         * @param {Ext.form.Slider.Thumb} thumb The thumb instance
+         * @param {Number} index Index of value changed
          * @param {Number} newValue The value that the thumb will be set to
          * @param {Number} oldValue The previous value
          */
@@ -511,11 +518,12 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
          * @event change
          * Fires when the value of a thumb is changed.
          * @param {jep.field.Slider} slider The slider instance
-         * @param {Ext.form.Slider.Thumb} thumb The thumb instance
+         * @param {Number} index Index of value changed
          * @param {Number} newValue The value that the thumb will be set to
          * @param {Number} oldValue The previous value
          */
         'change',
+
         /**
          * @event drag
          * Fires while the thumb is actively dragging.
@@ -524,6 +532,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
          * @param {Number} value The value of the thumb.
          */
         'drag',
+
         /**
          * @event dragend
          * Fires when the thumb is finished dragging.
@@ -560,6 +569,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
   // @private
   initComponent:function () {
     this.tabIndex = -1;
+    this.addCls(this.fieldCls);
 
     jep.field.Slider.superclass.initComponent.apply(this, arguments);
   },
@@ -695,7 +705,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
 
       if (this.minLabelCmp === undefined) {
         this.minLabelCmp = new Ext.Component({
-          cls:this.minLabelCls,
+          cls:this.fieldCls + '-' + this.minLabelCls,
           renderTo:this.fieldEl,
           html:label
         })
@@ -714,7 +724,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
 
       if (this.maxLabelCmp === undefined) {
         this.maxLabelCmp = new Ext.Component({
-          cls:this.maxLabelCls,
+          cls:this.fieldCls + '-' + this.maxLabelCls,
           renderTo:this.fieldEl,
           html:label
         })
@@ -800,54 +810,64 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
 
   // @private
   updateThumbLabel:function (thumb) {
-    if (this.showThumbLabels) {
+    if (this.rendered && this.showThumbLabels) {
       var value = this.values[this.thumbs.indexOf(thumb)];
 
-      var style = {width:this.drawnIncrementPx + 'px', left:null, right:null};
-
       if (value !== undefined) {
+        var label = '<span class="' + this.fieldCls + '-thumb-label-text">' +
+            this.getLabel(this, value, false).toString();
+
+        //var labelWidth = this.drawnIncrementPx;
+        var labelWidth = this.trackWidth / 4;
+
+
+        var style = {width:labelWidth + 'px'};
+
+        var x = this.getPixelValue(value);
+
         if (thumb.sliderLabel !== undefined && thumb.rendered) {
           var left;
           var cls;
 
-          var x = this.getPixelValue(value);
-
           if (value === this.minValue) {
-            cls = this.thumbLabelFirstCls;
             style.left = 0;
+            style.right = null;
+            cls = this.fieldCls + '-' + this.thumbLabelFirstCls;
           }
           else if (value === this.maxValue) {
-            cls = this.thumbLabelLastCls;
+            style.left = null;
             style.right = 0;
+            cls = this.fieldCls + '-' + this.thumbLabelLastCls;
           }
           else {
             cls = '';
-            style.left = (x - this.drawnIncrementPx / 2 + this.thumbWidth / 2) + 'px';
+            style.left = (x - labelWidth / 2 + this.thumbWidth / 2) + 'px';
           }
         }
 
         if (thumb.sliderLabel === undefined) {
           thumb.sliderLabel = new Ext.Component({
             renderTo:this.fieldEl,
-            cls:this.thumbLabelCls
+            cls:this.fieldCls + '-' + this.thumbLabelCls
           });
+          thumb.sliderLabelCallout = new Ext.Component({
+            renderTo:this.fieldEl,
+            cls:this.fieldCls + '-' + this.thumbLabelCalloutCls
+          });
+          thumb.sliderLabelCallout.addCls(this.fieldCls + '-' + this.thumbLabelCls);
         }
         else {
-          thumb.sliderLabel.removeCls(this.thumbLabelFirstCls);
-          thumb.sliderLabel.removeCls(this.thumbLabelLastCls);
+          thumb.sliderLabel.removeCls(this.fieldCls + '-' + this.thumbLabelFirstCls);
+          thumb.sliderLabel.removeCls(this.fieldCls + '-' + this.thumbLabelLastCls);
           thumb.sliderLabel.addCls(cls);
+          thumb.sliderLabelCallout.removeCls(this.fieldCls + '-' + this.thumbLabelFirstCls);
+          thumb.sliderLabelCallout.removeCls(this.fieldCls + '-' + this.thumbLabelLastCls);
+          thumb.sliderLabelCallout.addCls(cls);
         }
 
         thumb.sliderLabel.el.applyStyles(style);
 
-        var label;
-        if ((!this.showMinLabel || value !== this.minValue)
-            && (!this.showMaxLabel || value !== this.maxValue)) {
-          label = this.getLabel(this, value, false).toString();
-        }
-        else {
-          label = '';
-        }
+        thumb.sliderLabelCallout.el.applyStyles({left:(x + this.thumbWidth / 2 - 1) + 'px'});
 
         thumb.sliderLabel.update(label);
       }
@@ -855,11 +875,20 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
     else if (thumb.sliderLabel !== undefined) {
       thumb.sliderLabel.destroy();
       thumb.sliderLabel = undefined;
+      thumb.sliderLabelCallout.destroy();
+      thumb.sliderLabelCallout = undefined;
     }
   },
 
   // @private
   updateThumbLabels:function () {
+    if (this.showThumbLabels === false) {
+      this.addCls(this.fieldCls + '-' + this.noThumbLabelsCls);
+    }
+    else {
+      this.removeCls(this.fieldCls + '-' + this.noThumbLabelsCls);
+    }
+
     for (var i = 0; i < this.thumbs.length; i++) {
       this.updateThumbLabel(this.thumbs[i]);
     }
@@ -871,7 +900,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
       if (this.rangeCmp === undefined) {
         this.rangeCmp = new Ext.Component({
           renderTo:this.fieldEl,
-          cls:this.rangeCls
+          cls:this.fieldCls + '-' + this.rangeCls
         });
       }
 
@@ -900,7 +929,7 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
           function () {
             return new Ext.Component({
                   renderTo:this.fieldEl,
-                  cls:this.incrementMarkCls
+                  cls:this.fieldCls + '-' + this.incrementMarkCls
                 });
           },
 
@@ -918,10 +947,10 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
             && this.values.length > 1
             && value > this.values[0]
             && value < this.values[this.values.length - 1]) {
-          this.incrementMarks[i].addCls(this.incrementRangeMarkCls);
+          this.incrementMarks[i].addCls(this.fieldCls + '-' + this.incrementRangeMarkCls);
         }
         else {
-          this.incrementMarks[i].removeCls(this.incrementRangeMarkCls);
+          this.incrementMarks[i].removeCls(this.fieldCls + '-' + this.incrementRangeMarkCls);
         }
       }
     }
@@ -986,6 +1015,9 @@ jep.field.Slider = Ext.extend(Ext.form.Field, {
         me.updateSizes();
         me.updateSizes();
       }, 100);
+    }
+    else {
+      this.updateSizes();
     }
   },
 

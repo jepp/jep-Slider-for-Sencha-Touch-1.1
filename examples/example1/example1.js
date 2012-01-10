@@ -3,10 +3,11 @@ var config = [
     itemId:'sliderformfield',
     xtype:'sliderfield',
     label:'standard slider',
-    minValue:0,
+    minValue:1,
     maxValue:100,
     increment:10,
-    value:90
+    value:90,
+    height:'3.3em' // otherwise it takes up the whole height for some reason
   },
   {
     label:'single (plain)',
@@ -29,30 +30,12 @@ var config = [
     value:3
   },
   {
-    label:'two thumbs (with increment marks)',
+    label:'two thumbs (with range, increments marks and thumb labels)',
     xtype:'jepsliderfield',
-    showIncrements:true,
-    minValue:0,
+    minValue:1,
     maxValue:100,
     increment:10,
-    values:[20, 50]
-  },
-  {
-    label:'two thumbs (with range)',
-    xtype:'jepsliderfield',
     showRange:true,
-    minValue:0,
-    maxValue:100,
-    increment:10,
-    values:[20, 50]
-  },
-  {
-    label:'two thumbs (with range, increments and labels)',
-    xtype:'jepsliderfield',
-    showRange:true,
-    minValue:0,
-    maxValue:100,
-    increment:10,
     showIncrements:true,
     showThumbLabels:true,
     values:[20, 50]
@@ -60,10 +43,10 @@ var config = [
   {
     label:'three thumbs',
     xtype:'jepsliderfield',
-    showRange:true,
-    minValue:0,
+    minValue:1,
     maxValue:100,
     increment:10,
+    showRange:true,
     showIncrements:true,
     showThumbLabels:true,
     values:[20, 50, 70]
@@ -71,42 +54,36 @@ var config = [
   {
     label:'large values',
     xtype:'jepsliderfield',
-    showRange:true,
     minValue:10000,
     maxValue:90000,
     increment:10000,
+    showRange:true,
     showIncrements:true,
     showThumbLabels:true,
+    showMinLabel:true,
+    showMaxLabel:true,
     values:[20000, 50000, 70000]
-  },
-  {
-    label:'drawn increment larger than actual increment',
-    xtype:'jepsliderfield',
-    minValue:1,
-    maxValue:100,
-    increment:1,
-    showIncrements:10,
-    showThumbLabels:true,
-    value:24,
   },
   {
     label:'drawn increment larger than actual increment (with range)',
     xtype:'jepsliderfield',
-    showRange:true,
     minValue:1,
     maxValue:100,
     increment:1,
+    showRange:true,
     showIncrements:10,
     showThumbLabels:true,
+    showMinLabel:true,
+    showMaxLabel:true,
     values:[24, 58],
   },
   {
-    label:'getThumbLabel override (win showMinLabel and showMaxLabel)',
+    label:'getThumbLabel override',
     xtype:'jepsliderfield',
-    showRange:true,
-    minValue:0,
+    minValue:1,
     maxValue:4,
     increment:1,
+    showRange:true,
     showIncrements:true,
     showThumbLabels:true,
     showMinLabel:true,
@@ -121,6 +98,10 @@ var config = [
 new Ext.Application({
   name: 'app',
   launch: function() {
+    Ext.EventManager.onWindowResize(function () {
+      Ext.Viewport.updateBodySize();
+    });
+
     this.viewport = new Ext.TabPanel({
       fullscreen:true,
       items:[
@@ -130,10 +111,11 @@ new Ext.Application({
             title:'Not in form',
             scroll:'vertical',
             layout:'vbox',
+            items:config,
             defaults:{
-              height:61,
-            },
-            items:config
+//              showMinLabel:true,
+//              showMaxLabel:true
+            }
           }
         ),
 
